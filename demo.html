@@ -8,8 +8,14 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
 
 		<link href="https://unpkg.com/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/cytoscape-panzoom/2.5.3/cytoscape.js-panzoom.min.css" rel="stylesheet" type="text/css" />
+
 		<script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
 
+
+		<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.css">
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.js"></script>
 
 
 		<!-- for testing with local version of cytoscape.js -->
@@ -18,6 +24,9 @@
 		<script src="https://unpkg.com/webcola/WebCola/cola.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/cytoscape-cola@2.2.4/cytoscape-cola.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/cytoscape-cxtmenu@3.0.2/cytoscape-cxtmenu.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape-panzoom/2.5.3/cytoscape-panzoom.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/cytoscape-qtip@2.7.1/cytoscape-qtip.min.js"></script>
+
 
 
 		<style>
@@ -48,10 +57,6 @@
 		</style>
 
 		<script>
-          //  import cytoscape from 'cytoscape';
-          //  import automove from 'cytoscape-automove';
-
-          //  cytoscape.use( automove );
 
 			window.addEventListener('DOMContentLoaded', function(){
 
@@ -221,6 +226,66 @@
 					]
 				});
 
+                var defaultsZoom = {
+                    zoomFactor: 0.05, // zoom factor per zoom tick
+                    zoomDelay: 45, // how many ms between zoom ticks
+                    minZoom: 0.1, // min zoom level
+                    maxZoom: 10, // max zoom level
+                    fitPadding: 50, // padding when fitting
+                    panSpeed: 10, // how many ms in between pan ticks
+                    panDistance: 10, // max pan distance per tick
+                    panDragAreaSize: 75, // the length of the pan drag box in which the vector for panning is calculated (bigger = finer control of pan speed and direction)
+                    panMinPercentSpeed: 0.25, // the slowest speed we can pan by (as a percent of panSpeed)
+                    panInactiveArea: 8, // radius of inactive area in pan drag box
+                    panIndicatorMinOpacity: 0.5, // min opacity of pan indicator (the draggable nib); scales from this to 1.0
+                    zoomOnly: false, // a minimal version of the ui only with zooming (useful on systems with bad mousewheel resolution)
+                    fitSelector: undefined, // selector of elements to fit
+                    animateOnFit: function(){ // whether to animate on fit
+                        return false;
+                    },
+                    fitAnimationDuration: 1000, // duration of animation on fit
+
+                    // icon class names
+                    sliderHandleIcon: 'fa fa-minus',
+                    zoomInIcon: 'fa fa-plus',
+                    zoomOutIcon: 'fa fa-minus',
+                    resetIcon: 'fa fa-expand'
+                };
+
+                cy.panzoom( defaultsZoom );
+
+                cy.elements().qtip({
+                    content: function(){ return 'Example qTip on ele ' + this.id() },
+                    position: {
+                        my: 'top center',
+                        at: 'bottom center'
+                    },
+                    style: {
+                        classes: 'qtip-bootstrap',
+                        tip: {
+                            width: 16,
+                            height: 8
+                        }
+                    }
+                });
+                // call on core
+                cy.qtip({
+                    content: 'Example qTip on core bg',
+                    position: {
+                        my: 'top center',
+                        at: 'bottom center'
+                    },
+                    show: {
+                        cyBgOnly: true
+                    },
+                    style: {
+                        classes: 'qtip-bootstrap',
+                        tip: {
+                            width: 16,
+                            height: 8
+                        }
+                    }
+                });
 
 
 			});
@@ -228,7 +293,6 @@
 	</head>
 
 	<body>
-		<h1>cytoscape-cxtmenu demo</h1>
 
 		<div id="cy"></div>
 
