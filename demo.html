@@ -55,6 +55,9 @@
 		</style>
 
 		<script>
+            function getRandomArbitrary(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
 
 			window.addEventListener('DOMContentLoaded', function(){
 
@@ -62,16 +65,22 @@
 
                 for (let i = 0; i < 400 ; i++) {
                     elementsGenerated.nodes.push({ data: { id: 'j-'+i, name: 'Jerry' + i }});
+
                 }
 
                 for (let i = 1; i < 390 ; i++) {
-                    elementsGenerated.edges.push({data: {source: 'j-'+i, target: 'j-'+(i-1)}});
-                    elementsGenerated.edges.push({data: {source: 'j-'+i, target: 'j-'+(i+1)}});
-                  //  elementsGenerated.edges.push({data: {source: 'j-'+i, target: 'j-'+(i+2)}});
 
-                    if ((i % 2) === 0){
-                   //     elementsGenerated.edges.push({data: {source: 'j-1', target: 'j-'+i}});
-					}
+                    var cntNodeLinks = getRandomArbitrary(1,3);
+                    var fromNode = getRandomArbitrary(1,40);
+
+                    elementsGenerated.edges.push({data: {source: 'j-' + i, target: 'j-' + fromNode}});
+
+                    //console.log(cntNodeLinks);
+
+                    for (let j = 1; j < cntNodeLinks  ; j++){
+                        var nodePos = fromNode + j;
+                    }
+
                 }
 
 
@@ -80,7 +89,8 @@
 					container: document.getElementById('cy'),
 
                     layout: {
-                        name: 'cola'
+                        name: 'cola',
+                        animate: false
                     },
 
 					ready: function(){
@@ -122,105 +132,54 @@
 
 
 
-                var defaults = {
-                    animate: true, // whether to show the layout as it's running
-                    refresh: 1, // number of ticks per frame; higher is faster but more jerky
-                    maxSimulationTime: 4000, // max length in ms to run the layout
-                    ungrabifyWhileSimulating: false, // so you can't drag nodes during layout
-                    fit: true, // on every layout reposition of nodes, fit the viewport
-                    padding: 30, // padding around the simulation
-                    boundingBox: undefined, // constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-                    nodeDimensionsIncludeLabels: false, // whether labels should be included in determining the space used by a node
 
-                    // layout event callbacks
-                    ready: function(){}, // on layoutready
-                    stop: function(){}, // on layoutstop
-
-                    // positioning options
-                    randomize: false, // use random node positions at beginning of layout
-                    avoidOverlap: true, // if true, prevents overlap of node bounding boxes
-                    handleDisconnected: true, // if true, avoids disconnected components from overlapping
-                    nodeSpacing: function( node ){ return 10; }, // extra spacing around nodes
-                    flow: undefined, // use DAG/tree flow layout if specified, e.g. { axis: 'y', minSeparation: 30 }
-                    alignment: undefined, // relative alignment constraints on nodes, e.g. function( node ){ return { x: 0, y: 1 } }
-                    gapInequalities: undefined, // list of inequality constraints for the gap between the nodes, e.g. [{"axis":"y", "left":node1, "right":node2, "gap":25}]. The constraint in the example says that the center of node1 must be at least 25 pixels above the center of node2. In other words, it is an inequality constraint that requires "node1.y + gap <= node2.y". You can set the extra "equality" attribute as "true" to convert it into an equality constraint.
-
-                    // different methods of specifying edge length
-                    // each can be a constant numerical value or a function like `function( edge ){ return 2; }`
-                    edgeLength: undefined, // sets edge length directly in simulation
-                    edgeSymDiffLength: undefined, // symmetric diff edge length in simulation
-                    edgeJaccardLength: undefined, // jaccard edge length in simulation
-
-                    // iterations of cola algorithm; uses default values on undefined
-                    unconstrIter: undefined, // unconstrained initial layout iterations
-                    userConstIter: undefined, // initial layout iterations with user-specified constraints
-                    allConstIter: undefined, // initial layout iterations with all constraints including non-overlap
-
-                    // infinite layout options
-                    infinite: false // overrides all other options for a forces-all-the-time mode
-                };
-
-               // cy.layout({ name: 'random', defaults }).run();
-
-               /* cy.on('mouseover', 'node', function(event) {
-                    var node = event.cyTarget;
-                    node.qtip({
-                        content: 'hello',
-                        show: {
-                            event: event.type,
-                            ready: true
-                        },
-                        hide: {
-                            event: 'mouseout unfocus'
-                        }
-                    }, event);
-                });*/
 
 				cy.cxtmenu({
-					selector: 'node, edge',
+					selector: 'node',
 
 					commands: [
 						{
-							content: '<span class="fa fa-flash fa-2x"></span>',
+							content: '<span class="fa fa-plus fa-2x"></span>',
 							select: function(ele){
 								console.log( ele.id() );
+								//cy.add({ data: { source: A.id(), target: C.id() } });
 							}
 						},
 
 						{
-							content: '<span class="fa fa-star fa-2x"></span>',
-							select: function(ele){
-								console.log( ele.data('name') );
-							},
-							enabled: false
-						},
-
-						{
-							content: 'Text',
+							content: '<span class="fa fa-minus fa-2x"></span>',
 							select: function(ele){
 								console.log( ele.position() );
+                                cy.remove(ele);
 							}
 						}
 					]
 				});
 
-				cy.cxtmenu({
+                cy.cxtmenu({
+                    selector: 'edge',
+
+                    commands: [
+                        {
+                            content: '<span class="fa fa-minus fa-2x"></span>',
+                            select: function(ele){
+                                console.log( ele.position() );
+                            }
+                        }
+                    ]
+                });
+
+
+                cy.cxtmenu({
 					selector: 'core',
 
 					commands: [
-						{
-							content: 'bg1',
-							select: function(){
-								console.log( 'bg1' );
-							}
-						},
-
-						{
-							content: 'bg2',
-							select: function(){
-								console.log( 'bg2' );
-							}
-						}
+                        {
+                            content: '<span class="fa fa-plus fa-2x"></span>',
+                            select: function(ele){
+                                console.log( ele.id() );
+                            }
+                        }
 					]
 				});
 
@@ -266,23 +225,16 @@
                         }
                     }
                 });
-                // call on core
-                cy.qtip({
-                    content: 'Example qTip on core bg',
-                    position: {
-                        my: 'top center',
-                        at: 'bottom center'
-                    },
-                    show: {
-                        cyBgOnly: true
-                    },
-                    style: {
-                        classes: 'qtip-bootstrap',
-                        tip: {
-                            width: 16,
-                            height: 8
-                        }
-                    }
+
+                cy.$('node').on('grab', function (e) {
+                    var ele = e.target;
+                    ele.connectedEdges().style({ 'line-color': 'red' });
+                });
+
+
+                cy.$('node').on('free', function (e) {
+                    var ele = e.target;
+                    ele.connectedEdges().style({ 'line-color': 'rgb(153, 204, 0)' });
                 });
 
 
